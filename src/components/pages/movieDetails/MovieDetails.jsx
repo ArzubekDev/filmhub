@@ -1,107 +1,139 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import scss from "./MovieDetails.module.scss";
-import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { getMovieDetails } from "@/redux/mainSlice";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import Actors from "./actors/Actors";
 import { IoIosPlayCircle } from "react-icons/io";
-import Trailer from "../Trailer/Trailer";
+import { TMDB_CONFIG } from "@/shared/api/tmdb.config";
+import { useMovieDetails } from "@/shared/api/detail.api";
+import { Helmet } from "react-helmet-async";
+
+const Actors = lazy(() => import("./actors/Actors"));
+const Trailer = lazy(() => import("../Trailer/Trailer"));
+
+
+const MovieDetailsSkeleton = () => (
+  <div className={scss.skeleton}>
+    <div className={scss.posterSkeleton} />
+    <div className={scss.textSkeleton} />
+    <div className={scss.textSkeletonSmall} />
+  </div>
+);
+
+const BlurImage = ({ src, alt }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      onLoad={() => setLoaded(true)}
+      className={`${scss.blurImage} ${loaded ? scss.Imageloaded : ""}`}
+    />
+  );
+};
 
 const MovieDetails = () => {
-  const dispatch = useDispatch();
-  const [trailer, setTrailer] = useState([]);
-  const [isActive, setIsActive] = useState(false);
   const { MID } = useParams();
-  const { md } = useSelector((s) => s.firstReducer);
-  let api_key = import.meta.env.VITE_API_KEY;
+  const [isActive, setIsActive] = useState(false);
 
-  async function getMDetails() {
-    let res = await axios.get(
-      `https://api.themoviedb.org/3/movie/${MID}?api_key=${api_key}&language=en-US`
-    );
-    return dispatch(getMovieDetails(res.data));
-  }
-  async function getTrailer(key) {
-    let res = await axios.get(
-      `https://api.themoviedb.org/3/movie/${MID}/videos?api_key=${key}&language=en-US`
-    );
-    let { results } = res.data;
-    setTrailer(results);
-  }
-  const watch = trailer.slice(0, 1);
+  const { data, isLoading, isError } = useMovieDetails(MID);
 
   useEffect(() => {
-    getMDetails();
-    getTrailer(api_key);
-  }, []);
+    window.scrollTo(0, 0);
+  }, [MID]);
 
   useEffect(() => {
-    window.scroll(0, 0);
+    document.body.style.overflow = isActive ? "hidden" : "auto";
+    return () => (document.body.style.overflow = "auto");
   }, [isActive]);
 
-  const percentage = Math.round(md.vote_average * 10);
+  if (isLoading) return <MovieDetailsSkeleton />;
+  if (isError) return <h2>Something went wrong</h2>;
 
-  let color = "";
-  if (percentage >= 70) {
-    color = "#21d07a";
-  } else if (percentage >= 40) {
-    color = "#d2d531";
-  } else {
-    color = "#db2360";
-  }
+  const {
+    title,
+    backdrop_path,
+    poster_path,
+    vote_average,
+    release_date,
+    runtime,
+    genres,
+    overview,
+    videos,
+  } = data;
 
-useEffect(() => {
-  if(isActive){
-    document.body.style.overflow = "hidden"
-  } else {
-    document.body.style.overflow = "auto"
-  }
-  return () => {
-    document.body.style.overflow = "auto"
-  }
-}, [isActive])
+  const trailer = videos?.results?.find((v) => v.type === "Trailer");
+  const percentage = Math.round(vote_average * 10);
+  const color =
+    percentage >= 70 ? "#21d07a" : percentage >= 40 ? "#d2d531" : "#db2360";
 
   return (
     <>
+     <Helmet>
+    <title>{title} | Movie App</title>
+
+    <meta
+      name="description"
+      content={overview?.slice(0, 160) || "Movie details and information"}
+    />
+
+    {/* Open Graph (Facebook, Telegram, WhatsApp) */}
+    <meta property="og:title" content={title} />
+    <meta
+      property="og:description"
+      content={overview?.slice(0, 160)}
+    />
+    <meta
+      property="og:image"
+      content={`${TMDB_CONFIG.IMAGE_BASE_URL}/${TMDB_CONFIG.IMAGE_SIZES.POSTER}/${poster_path}`}
+    />
+    <meta property="og:type" content="video.movie" />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta
+      name="twitter:description"
+      content={overview?.slice(0, 160)}
+    />
+    <meta
+      name="twitter:image"
+      content={`${TMDB_CONFIG.IMAGE_BASE_URL}/${TMDB_CONFIG.IMAGE_SIZES.POSTER}/${poster_path}`}
+    />
+  </Helmet>
       <section
         id={scss.movieDetails}
         style={{
-          backgroundImage: `url(https://media.themoviedb.org/t/p/w1920_and_h600_multi_faces/${md.backdrop_path})`,
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
+          backgroundImage: `url(${TMDB_CONFIG.IMAGE_BASE_URL}/${TMDB_CONFIG.IMAGE_SIZES.BACKDROP}/${backdrop_path})`,
         }}
       >
         <div className={scss.content}>
           <div className={scss.image}>
-            <img
-              src={`https://media.themoviedb.org/t/p/w440_and_h660_face/${md.poster_path}`}
-              alt={md.title}
+            <BlurImage
+              src={`${TMDB_CONFIG.IMAGE_BASE_URL}/${TMDB_CONFIG.IMAGE_SIZES.POSTER}/${poster_path}`}
+              alt={title}
             />
           </div>
           <div className={scss.info}>
-            <h1>
-              {md.title?.length > 50 ? md.title.slice(0, 50) + "..." : md.title}
-            </h1>
+            <h1>{title?.length > 50 ? title.slice(0, 50) + "..." : title}</h1>
 
             <div className={scss.dates}>
               <h4>
-                Release Date: <span>{md.release_date}</span>
+                Release Date: <span>{release_date}</span>
               </h4>
               <h4>
                 Runtime:{" "}
                 <span>
-                  {md.runtime
-                    ? `${Math.floor(md.runtime / 60)}h ${md.runtime % 60}min`
+                  {runtime
+                    ? `${Math.floor(runtime / 60)}h ${runtime % 60}min`
                     : "N/A"}
                 </span>
               </h4>
             </div>
             <div className={scss.genres}>
-              {md.genres?.map((genre) => (
-                <span key={genre.id}>{genre.name}</span>
+              {genres?.map((g) => (
+                <span key={g.id}>{g.name}</span>
               ))}
             </div>
 
@@ -124,35 +156,43 @@ useEffect(() => {
                 <button
                   className={scss.playBtn}
                   title="watch trailer"
-                  onClick={() => watch.length && setIsActive(true)}
+                  onClick={() => trailer && setIsActive(true)}
                 >
                   <IoIosPlayCircle />
                 </button>
-                <h3 className={scss.btnWatch} onClick={() => watch.length && setIsActive(true)}>
+                <h3
+                  className={scss.btnWatch}
+                  onClick={() => trailer && setIsActive(true)}
+                >
                   Watch Trailer
                 </h3>
               </div>
             </div>
             <div className={scss.overview}>
               <h3>Overview</h3>
-              <p>{md.overview || "No description available."}</p>
+              <p>{overview || "No description available."}</p>
             </div>
           </div>
         </div>
-        {watch.map((el) => (
-          <div className={scss.watchBG} style={{display: isActive ? "flex": "none"}}>
+        {isActive && trailer && (
+          <div className={scss.watchBG}>
             <div className={scss.watch}>
               <iframe
-                src={`https://www.youtube.com/embed/${el.key}`}
-                frameborder="0"
-              ></iframe>
+                src={`https://www.youtube.com/embed/${trailer.key}`}
+                allowFullScreen
+              />
               <p onClick={() => setIsActive(false)}>close</p>
             </div>
           </div>
-        ))}
+        )}
       </section>
-      <Actors kinoID={MID} />
-      <Trailer kinoID={MID} />
+      <Suspense fallback={<div>Loading actors...</div>}>
+        <Actors kinoID={MID} />
+      </Suspense>
+
+      <Suspense fallback={<div>Loading trailers...</div>}>
+        <Trailer kinoID={MID} />
+      </Suspense>
     </>
   );
 };
