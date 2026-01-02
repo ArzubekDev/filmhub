@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/shared/api/axios.instance";
 import { TMDB_CONFIG } from "@/shared/api/tmdb.config";
+import { axiosInstance } from "./axios.intance";
 
 export const getMovieFullDetails = (id) =>
   axiosInstance.get(

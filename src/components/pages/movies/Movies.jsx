@@ -85,13 +85,12 @@ const Movies = () => {
                     </motion.div>
                   ))
               }
-              {/* Infinite scroll Skeleton */}
               {isFetchingNextPage &&
                 Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton
                     key={`next-${i}`}
                     variant="rectangular"
-                    width="100%"
+                    width={200}
                     height={350}
                     animation="wave"
                     sx={{ borderRadius: "12px", marginBottom: "20px" }}
@@ -100,7 +99,7 @@ const Movies = () => {
               }
             </div>
           </AnimatePresence>
-
+{isLoading && <h2 style={{ color: "white" }}>Загрузка...</h2>}
           <div ref={loadMoreRef}></div>
         </div>
       </div>

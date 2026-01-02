@@ -1,4 +1,4 @@
-import { axiosInstance } from "./axios.instance";
+import { axiosInstance } from "./axios.intance";
 import { TMDB_CONFIG } from "./tmdb.config";
 
 export const getPopularApi = (page = 1) => {

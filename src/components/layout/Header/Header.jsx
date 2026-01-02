@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import styles from "./Header.module.scss";
 import logo from "@/assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
+import { CiHome } from "react-icons/ci";
+import { MdLocalMovies } from "react-icons/md";
+import { IoTvOutline } from "react-icons/io5";
 
 const Header = () => {
   const [hidden, setHidden] = useState(false);
@@ -29,6 +32,21 @@ const Header = () => {
       document.body.style.overflow = "auto";
     }
   });
+
+  useEffect(() => {
+    if(isOpen){
+      document.body.style.overflow = "hidden"
+      document.documentElement.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+      document.documentElement.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.documentElement.style.overflow = "auto"
+    }
+  }, [isOpen])
   return (
     <>
       <header className={`${styles.Header} ${hidden ? styles.hidden : ""}`}>
@@ -68,17 +86,31 @@ const Header = () => {
           </div>
         </div>
       </header>
+{isOpen && (
+  <div
+    className={styles.overlay}
+    onClick={() => setIsOpen(false)}
+  />
+)}
 
       <nav className={`${styles.phoneNav} ${isOpen ? styles.active : ""}`}>
         <h3 onClick={() => {
           nav("/"); setIsOpen(false)
-        }}>Home</h3>
+        }}> <span><CiHome /></span> Home</h3>
         <h3 onClick={() => {
           nav("/movies"); setIsOpen(false)
-        }}>Movies</h3>
+        }}> <span><MdLocalMovies /></span> Movies</h3>
         <h3 onClick={() => {
           nav("/tvshow"); setIsOpen(false)
-        }}>TV Shows</h3>
+        }}> <span><IoTvOutline /></span> TV Shows</h3>
+         <a
+    href="https://arzu-dev.vercel.app/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className={styles.creator}
+  > 
+    Created by Arzubek
+  </a>
       </nav>
     </>
   );

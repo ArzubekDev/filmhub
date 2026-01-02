@@ -10,10 +10,10 @@ body {
   padding: 0;
   box-sizing: border-box;
   overflow: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
   background: #001c34;
-  font-family: var(--font-jetbrains-mono), monospace;
+  lighting-color: transparent;
 }
 
 html::-webkit-scrollbar,
@@ -23,9 +23,12 @@ body::-webkit-scrollbar {
 }
 .container {
   width: 90%;
-  // max-width: 1400px;
   margin: 0 auto;
 }
 a {
   text-decoration: none;
+}
+
+button, img, a, svg {
+  user-select: none;
 }

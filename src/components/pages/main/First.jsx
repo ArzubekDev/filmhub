@@ -1,16 +1,21 @@
-"use client";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./First.module.scss";
 import { useSelector, useDispatch } from "react-redux";
 import Card from "@/components/Card/Card";
 import { getFIRST, getToday } from "@/redux/mainSlice";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 const SCROLL_THRESHOLD_PX = 300;
 
 const First = () => {
   const scrollRef = useRef(null);
   const rafRef = useRef(0);
+
+  const routeRef = useRef(null);
+  const weekRef = useRef(null);
+  const todayRef = useRef(null);
+
+  const [bgStyle, setBgStyle] = useState({ x: 0, width: 0 });
 
   const dispatch = useDispatch();
   const { main, today } = useSelector((s) => s.firstReducer);
@@ -49,35 +54,57 @@ const First = () => {
       ro.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [route, main, today]); 
+  }, [route, main, today]);
+
+  useEffect(() => {
+    const container = routeRef.current;
+    const target = route ? todayRef.current : weekRef.current;
+
+    if (!container || !target) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+
+    setBgStyle({
+      x: targetRect.left - containerRect.left,
+      width: targetRect.width,
+    });
+  }, [route]);
 
   return (
     <section id={styles.first}>
       <div className="container">
-        <div className={styles.route}>
-          <div
-            className={`${styles.bg} ${route ? styles.activebg : styles.notbg}`}
-          />
-          <h4
-            className={styles.left}
-            onClick={() => {
-              setRoute(false);
-              if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+        <div ref={routeRef} className={styles.route}>
+          <motion.div
+            className={styles.bg}
+            animate={{
+              x: bgStyle.x,
+              width: bgStyle.width,
             }}
-            style={{ color: route ? "#52b69a" : "#d8f3dc" }}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 24,
+            }}
+          />
+
+          <motion.h4
+            ref={weekRef}
+            onClick={() => setRoute(false)}
+            animate={{ color: route ? "#d8f3dc" : "#f0a500" }}
+            whileTap={{ scale: 0.95 }}
           >
             Week
-          </h4>
-          <h4
-            className={styles.right}
-            onClick={() => {
-              setRoute(true);
-              if (scrollRef.current) scrollRef.current.scrollLeft = 0;
-            }}
-            style={{ color: !route ? "#52b69a" : "#d8f3dc" }}
+          </motion.h4>
+
+          <motion.h4
+            ref={todayRef}
+            onClick={() => setRoute(true)}
+            animate={{ color: route ? "#f0a500" : "#d8f3dc" }}
+            whileTap={{ scale: 0.95 }}
           >
             Today
-          </h4>
+          </motion.h4>
         </div>
 
         <div className={styles.content}>
@@ -93,19 +120,19 @@ const First = () => {
             aria-hidden
           />
 
-            <motion.div
-              ref={scrollRef}
-              key={route ? "today" : "week"}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.35 }}
-              className={styles.block}
-            >
-              {(route ? today : main)?.map((el, idx) => (
-                <Card el={el} key={el.id || idx} />
-              ))}
-            </motion.div>
+          <motion.div
+            ref={scrollRef}
+            key={route ? "today" : "week"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className={styles.block}
+          >
+            {(route ? today : main)?.map((el, idx) => (
+              <Card el={el} key={el.id || idx} />
+            ))}
+          </motion.div>
         </div>
       </div>
     </section>

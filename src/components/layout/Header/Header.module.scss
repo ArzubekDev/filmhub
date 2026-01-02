@@ -61,7 +61,6 @@ $yellow-color: #f0a500;
       cursor: pointer;
       @media (max-width: 576px) {
         transform: translateX(-40%);
-        
       }
       @media (max-width: 436px) {
         height: 52px;
@@ -107,8 +106,8 @@ $yellow-color: #f0a500;
         cursor: pointer;
         position: relative;
         @media (max-width: 436px) {
-        width: 22px;
-        transform: translateX(50%);
+          width: 22px;
+          transform: translateX(50%);
         }
       }
 
@@ -158,14 +157,20 @@ $yellow-color: #f0a500;
     }
   }
 }
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9;
+}
 
 .phoneNav {
   position: fixed;
-  top: 0;
-  left: -100%; // башында көрүнбөйт
-  width: 70vw;
+  top: 50px;
+  right: -100%; // башында көрүнбөйт
+  width: 60vw;
   height: 100%;
-  background: #1e262fe2;
+  background: rgb(220, 220, 220);
   backdrop-filter: blur(4px);
   display: none; // default: көрүнбөйт
   flex-direction: column;
@@ -181,14 +186,15 @@ $yellow-color: #f0a500;
     display: flex;
     align-items: center;
     justify-content: start;
-    padding-left: 3rem;
+    gap: 4px;
 
     font-size: 1.2rem;
     font-weight: 400;
-    color: white;
+    color: rgb(47, 5, 125);
     cursor: pointer;
     width: 100%;
     height: 7vh;
+    border-bottom: 1.5px solid black;
     &:hover {
       color: $yellow-color;
       background: #10002b93;
@@ -196,10 +202,22 @@ $yellow-color: #f0a500;
   }
 
   &.active {
-    left: 0; // ачылганда чыгат
+    right: 0; // ачылганда чыгат
   }
 
   @media (max-width: 576px) {
     display: flex; // мобилкада гана чыгат
+  }
+  .creator {
+    margin: 0 auto;
+    margin-top: auto;
+    margin-bottom: 4rem;
+    font-size: 0.8rem;
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    &:hover{
+      text-decoration: underline;
+    }
   }
 }

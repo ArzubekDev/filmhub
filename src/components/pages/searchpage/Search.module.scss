@@ -9,10 +9,11 @@ $fullBG: #10002b;
     }
     h2{
 
+
       span{
-        color: #f0a500;
+        color: rgb(220, 220, 220);
       }
-        color: white;
+      color: #f0a500;
         padding-bottom: 4rem;
         font-size: 2rem;
         font-weight: 400;
@@ -20,7 +21,11 @@ $fullBG: #10002b;
           font-size: 1rem;
           padding-bottom: 1.8rem;
     } 
-    }
+  }
+  .nothing_found{
+    color:rgb(220, 220, 220);
+    font-size: 28px;
+  }
     .notFound {
   text-align: center;
   margin-top: 3rem;

@@ -19,18 +19,33 @@ const Search = () => {
     setSearchMovie(results);
   }
 
-  useEffect(() => {
-    if (movieName) getSearch(api_key);
-  }, [movieName]);
+useEffect(() => {
+  if (!movieName || movieName === "empty") {
+    setSearchMovie([]);
+    return;
+  }
+
+  getSearch(api_key);
+}, [movieName]);
+
 
   return (
     <section className={scss.Search}>
       <div className="container">
-        {searchMovie.length > 0 ? (
-          <h2>
-            <span>Search results:</span>{" "}
-            {movieName[0].toUpperCase() + movieName.slice(1)}
-          </h2>
+        {searchMovie ? (
+         <>
+         <h2>
+  <span>Search results:</span>{" "}
+  {movieName !== "empty"
+    ? movieName[0].toUpperCase() + movieName.slice(1)
+    : ""}
+</h2>
+
+{!searchMovie.length && (
+  <span className={scss.nothing_found}>Not Found...</span>
+)}
+
+         </>
         ) : (
           <div className={scss.notFound}>
             <h2>Nothing Found...</h2>

@@ -16,10 +16,7 @@ const TypeWriter = ({ className }) => {
     const tl = gsap.timeline({ repeat: -1 });
 
     texts.forEach((text) => {
-      // reset
       tl.set(el, { textContent: "" });
-
-      // typing
       text.split("").forEach((char) => {
         tl.to(el, {
           duration: TYPE_SPEED,
@@ -28,10 +25,8 @@ const TypeWriter = ({ className }) => {
         });
       });
 
-      // pause after full text
-      tl.to({}, { duration: 1 });
+      tl.to({}, { duration: 7 });
 
-      // deleting
       text.split("").forEach(() => {
         tl.to(el, {
           duration: DELETE_SPEED,
@@ -40,8 +35,7 @@ const TypeWriter = ({ className }) => {
         });
       });
 
-      // pause before next sentence
-      tl.to({}, { duration: 0.5 });
+      tl.to({}, { duration: .6 });
     });
 
     return () => tl.kill();

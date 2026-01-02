@@ -43,10 +43,21 @@ const MovieDetails = () => {
     window.scrollTo(0, 0);
   }, [MID]);
 
-  useEffect(() => {
-    document.body.style.overflow = isActive ? "hidden" : "auto";
-    return () => (document.body.style.overflow = "auto");
-  }, [isActive]);
+useEffect(() => {
+  if (isActive) {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
+  }
+
+  return () => {
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
+  };
+}, [isActive]);
+
 
   if (isLoading) return <MovieDetailsSkeleton />;
   if (isError) return <h2>Something went wrong</h2>;
@@ -63,10 +74,20 @@ const MovieDetails = () => {
     videos,
   } = data;
 
-  const trailer = videos?.results?.find((v) => v.type === "Trailer");
+ const trailer =
+  videos?.results?.find(
+    (v) => v.type === "Trailer" && v.site === "YouTube"
+  ) ||
+  videos?.results?.find(
+    (v) => v.type === "Teaser" && v.site === "YouTube"
+  ) ||
+  videos?.results?.[0];
+const hasVideo = Boolean(trailer?.key);
+
   const percentage = Math.round(vote_average * 10);
   const color =
     percentage >= 70 ? "#21d07a" : percentage >= 40 ? "#d2d531" : "#db2360";
+
 
   return (
     <>
@@ -156,16 +177,18 @@ const MovieDetails = () => {
                 <button
                   className={scss.playBtn}
                   title="watch trailer"
-                  onClick={() => trailer && setIsActive(true)}
+                  disabled={!hasVideo}
+                  onClick={() => setIsActive(true)}
                 >
                   <IoIosPlayCircle />
                 </button>
-                <h3
+                <button
                   className={scss.btnWatch}
-                  onClick={() => trailer && setIsActive(true)}
+                  disabled={!hasVideo}
+                  onClick={() => setIsActive(true)}
                 >
                   Watch Trailer
-                </h3>
+                </button>
               </div>
             </div>
             <div className={scss.overview}>

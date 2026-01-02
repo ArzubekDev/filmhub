@@ -1,0 +1,57 @@
+.notFound {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #081c15, #1b4332);
+
+  .box {
+    text-align: center;
+    padding: 60px 40px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+    h1 {
+      font-size: 120px;
+      font-weight: 800;
+      color: #52b69a;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 32px;
+      color: #d8f3dc;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #b7e4c7;
+      margin-bottom: 32px;
+    }
+
+    button {
+      padding: 14px 36px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      background: #52b69a;
+      color: #081c15;
+      transition: 0.3s ease;
+
+      &:hover {
+        background: #74c69d;
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+  }
+}
+

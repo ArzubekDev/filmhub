@@ -3,10 +3,11 @@
   padding-bottom: 5rem;
   min-height: 70vh;
   position: relative;
-    @media (max-width: 768px) {
+  @media (max-width: 768px) {
     padding-block: 0rem;
   }
   h2 {
+    color: rgb(220, 220, 220);
     padding-block: 2rem;
     font-size: 3rem;
     font-weight: 400;
@@ -45,23 +46,17 @@
     }
 
     .block {
-      .iframe {
-        width: 20vw;
-        height: 22vh;
-        border: none;
-        @media (max-width: 992px) {
-          width: 30vw;
-        }
-        @media (max-width: 576px) {
-          width: 42vw;
-        }
-        //  @media (max-width: 436px) {
-        //   width: 42vw;
-        // }
-
-        @media (max-width: 423px) {
-          width: 44vw;
-        }
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      background: #c00258;
+      border-radius: 12px;
+      overflow: hidden;
+      .videos {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
       }
     }
   }

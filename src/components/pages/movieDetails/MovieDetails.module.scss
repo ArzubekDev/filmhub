@@ -177,6 +177,8 @@ $yellow-color: #f0a500;
           }
 
           .btnWatch {
+            border: none;
+            background: transparent;
             font-size: 1.5rem;
             font-weight: 400;
             color: $fullBG;
@@ -216,7 +218,7 @@ $yellow-color: #f0a500;
     }
   }
   .watchBG {
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: #0000008b;
     backdrop-filter: blur(6px);

@@ -8,6 +8,7 @@ import MovieDetails from "./components/pages/movieDetails/MovieDetails";
 import TVShows from "./components/pages/TVShows/TVShows";
 import Search from "./components/pages/searchpage/Search";
 import Footer from "./components/layout/Footer/Footer";
+import NotFound from "./components/pages/NotFound/NotFound";
 
 const App = () => {
   let routes = [
@@ -36,7 +37,11 @@ const App = () => {
       link: "/search/:movieName",
       page: <Search />,
     },
-    
+    {
+      id: 6,
+      link: "*",
+      page: <NotFound />,
+    },
   ];
   return (
     <div className="app">
@@ -46,7 +51,7 @@ const App = () => {
           <Route path={el.link} element={el.page} key={el.id} />
         ))}
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

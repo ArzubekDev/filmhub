@@ -1,62 +1,61 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import styles from "./Main.module.scss";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import TypeWriter from "./TypeWritter";
-
+import { useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { getTopRatedMovies } from "@/shared/api/movies.api";
+import { CiSearch } from "react-icons/ci";
 
 const Main = () => {
-
-  const [randomBG, setRandomBG] = useState([]);
-  const [randomIndex, setRandomIndex] = useState(0);
-  const [search, setSearch] = useState("");
   const nav = useNavigate();
-  let api_key = import.meta.env.VITE_API_KEY;
-  let topRatedAPI = `https://api.themoviedb.org/3/movie/top_rated?api_key=${api_key}&language=en-US&page=5`;
+  const [randomIndex, setRandomIndex] = useState(0);
+  const [placeholder, setPlaceholder] = useState(
+    "Search for a movie, tv show, person..."
+  );
+  const { register, handleSubmit } = useForm({
+    defaultValues: { search: "" },
+  });
 
-  function toSearch() {
-    nav(`/search/${search}`);
+  function toSearch(data) {
+    const value = data.search.trim();
+    nav(value ? `/search/${value}` : "/search/empty");
   }
 
-  async function randomBackground() {
-    try {
-      let res = await axios.get(topRatedAPI);
-      let { results } = res.data;
-      let getBackdrop = results.map((el) => el.backdrop_path);
-      setRandomBG(getBackdrop);
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["movies", "topRated", 5],
+    queryFn: () => getTopRatedMovies(5),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const movies = data?.results ?? [];
+  const backdrops = movies.map((el) => el.backdrop_path).filter(Boolean);
 
   useEffect(() => {
-    async function task() {
-      try {
-        let res = await axios.get(
-          `https://api.themoviedb.org/3/movie/popular?api_key=${api_key}&language=en-US&page=2`
-        );
-        console.log(res.data.results);
-      } catch (err) {
-        console.error(err);
-      }
+    if (backdrops.length) {
+      setRandomIndex(Math.floor(Math.random() * backdrops.length));
     }
+  }, [backdrops.length]);
 
-    task(); // компонент ачылганда гана чакыруу
+  const bgImage = backdrops[randomIndex]
+    ? `https://media.themoviedb.org/t/p/w1920_and_h600_multi_faces/${backdrops[randomIndex]}`
+    : "";
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 530px)");
+
+    const updatePlaceholder = () => {
+      setPlaceholder(
+        media.matches ? "Search..." : "Search for a movie, tv show, person..."
+      );
+    };
+
+    updatePlaceholder();
+    media.addEventListener("change", updatePlaceholder);
+
+    return () => media.removeEventListener("change", updatePlaceholder);
   }, []);
-
-  const bgImage =
-    randomBG.length > 0
-      ? `https://media.themoviedb.org/t/p/w1920_and_h600_multi_faces/${randomBG[randomIndex]}`
-      : "";
-  useEffect(() => {
-    randomBackground();
-  }, []);
-
-  useEffect(() => {
-    if (randomBG.length > 0) {
-      setRandomIndex(Math.floor(Math.random() * randomBG.length));
-    }
-  }, [randomBG]);
 
   return (
     <section
@@ -69,33 +68,30 @@ const Main = () => {
     >
       <div className="container">
         <div className={styles.content}>
- <TypeWriter className={styles.text} />
+          <TypeWriter className={styles.text} />
+
           <h3>
             Millions of movies, TV shows and people to discover. Explore now.
           </h3>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              toSearch();
-            }}
-          >
+
+          <form onSubmit={handleSubmit(toSearch)}>
             <input
               type="text"
-              placeholder="Search for a movie, tv show, person....."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              placeholder={placeholder}
+              {...register("search")}
             />
-            <button
-              type="submit"
-              className={styles.search}
-              disabled={!search.length}
-            >
-              Search
+
+            <button type="submit" className={styles.search}>
+              <span className={styles.btnText}>Search</span>
+              <CiSearch className={styles.icon} />
             </button>
           </form>
+
+          {isLoading && <p>Loading...</p>}
+          {isError && <p>Error loading movies</p>}
         </div>
       </div>
-      <div className={styles.fullBG}></div>
+      <div className={styles.fullBG} />
     </section>
   );
 };

@@ -3,24 +3,18 @@ import scss from "./Actors.module.scss";
 import axios from "axios";
 import img1 from "@/assets/images/img1.png"
 import img2 from "@/assets/images/img2.avif"
+import { useMovieActors } from "@/shared/api/actors.api";
 
 
 const Actors = ({ kinoID }) => {
-  let api_key = import.meta.env.VITE_API_KEY;
-  const [actors, setActors] = useState([]);
-  async function getActors(key) {
-    let res = await axios.get(
-      `https://api.themoviedb.org/3/movie/${kinoID}/credits?api_key=${key}&language=en-US`
-    );
-    let { data } = res;
-    setActors(data.cast);
-  }
 
-  useEffect(() => {
-    getActors(api_key);
-  }, [api_key]);
+const {
+  data,
+  isLoading,
+  isError,
+} = useMovieActors(kinoID);
 
-
+const actors = data?.cast ?? [];
 
 
 
