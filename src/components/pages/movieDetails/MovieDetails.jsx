@@ -198,7 +198,7 @@ const hasVideo = Boolean(trailer?.key);
           </div>
         </div>
         {isActive && trailer && (
-          <div className={scss.watchBG}>
+          <div className={scss.watchBG} onClick={() => setIsActive(false)}>
             <div className={scss.watch}>
               <iframe
                 src={`https://www.youtube.com/embed/${trailer.key}`}
