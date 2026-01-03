@@ -3,6 +3,7 @@
   margin: 0;
   font-family: "Inter", sans-serif;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 html,
 body {
@@ -13,7 +14,7 @@ body {
   scrollbar-width: none; 
   -ms-overflow-style: none;
   background: #001c34;
-  lighting-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html::-webkit-scrollbar,
