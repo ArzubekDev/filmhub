@@ -82,8 +82,8 @@ const Main = () => {
             />
 
             <button type="submit" className={styles.search}>
-              <span className={styles.btnText}>Search</span>
               <CiSearch className={styles.icon} />
+              <span className={styles.btnText}>Search</span>
             </button>
           </form>
 
