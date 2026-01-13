@@ -14,6 +14,7 @@ const TypeWriter = ({ className }) => {
   useEffect(() => {
     const el = textRef.current;
     const tl = gsap.timeline({ repeat: -1 });
+console.log("Hellooo");
 
     texts.forEach((text) => {
       tl.set(el, { textContent: "" });

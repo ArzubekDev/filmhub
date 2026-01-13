@@ -2,6 +2,9 @@ $fullBG: #10002b;
 $yellow-color: #f0a500;
 
 #movieDetails {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   min-height: 84vh;
   width: 100%;
   position: relative;
