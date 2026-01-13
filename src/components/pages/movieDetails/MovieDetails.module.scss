@@ -241,6 +241,7 @@ $yellow-color: #f0a500;
       }
       
       iframe {
+      border-radius: 12px;
         width: 630px;
         height: 410px;
         @media (max-width: 576px) {
