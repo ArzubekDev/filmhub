@@ -5,7 +5,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getTopRatedMovies } from "@/shared/api/movies.api";
 import { Skeleton, Box } from "@mui/material";
+import { useMemo } from "react";
 
+
+  const genreMap = {
+    28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy",
+    80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family",
+    14: "Fantasy", 36: "History", 27: "Horror", 10402: "Music",
+    9648: "Mystery", 10749: "Romance", 878: "Science Fiction",
+    10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western",
+  };
+  
 const Movies = () => {
   const loadMoreRef = useRef(null);
   const [select, setSelect] = useState("All");
@@ -19,20 +29,13 @@ const Movies = () => {
 
   const movies = data?.pages.flatMap((page) => page.results) ?? [];
 
-  const genreMap = {
-    28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy",
-    80: "Crime", 99: "Documentary", 18: "Drama", 10751: "Family",
-    14: "Fantasy", 36: "History", 27: "Horror", 10402: "Music",
-    9648: "Mystery", 10749: "Romance", 878: "Science Fiction",
-    10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western",
-  };
-
-  const filteredMovies =
-    select === "All"
+  const filteredMovies = useMemo(() => {
+    return select === "All"
       ? movies
       : movies.filter(movie =>
-          movie.genre_ids?.some(id => genreMap[id] === select)
+          movie.genre_ids?.some(id => GENRE_MAP[id] === select)
         );
+  }, [movies, select]);
 
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage) return;
